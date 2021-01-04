@@ -3,8 +3,8 @@
 blog_theme: dark # Or use dark
 name: Skelz0r
 paginate: 25
-url: https://skelz0r.github.io/blog
-
+url: https://skelz0r.github.io
+baseurl: /blog
 
 # Optional settings
 
