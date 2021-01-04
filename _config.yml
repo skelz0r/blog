@@ -1,14 +1,13 @@
 # Mandatory settings
 
-blog_theme: dark # Or use dark
+blog_theme: light # Or use dark
 name: Skelz0r
 paginate: 25
-url: https://skelz0r.github.io
-baseurl: /blog
+url: https://blog.skelz0r.fr
 
 # Optional settings
 
-about_enabled: true # Change to true if you wish to show an icon in the navigation that redirects to the about page
+about_enabled: false # Change to true if you wish to show an icon in the navigation that redirects to the about page
 discus_identifier: # chalk-1 # Add your Disqus identifier
 ga_analytics: # UA-28631876-6 # Add your GA Tracking Id
 local_fonts: false # Change to true if you wish to use local fonts
