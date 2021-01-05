@@ -9,6 +9,7 @@ url: https://blog.skelz0r.fr
 
 about_enabled: false # Change to true if you wish to show an icon in the navigation that redirects to the about page
 discus_identifier: # chalk-1 # Add your Disqus identifier
+gc_analytics: skelz0r-blog
 ga_analytics: # G-XPD2R8JNP4 # Add your GA Tracking Id
 local_fonts: false # Change to true if you wish to use local fonts
 rss_enabled: true # Change to false if not

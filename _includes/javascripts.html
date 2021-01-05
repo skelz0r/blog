@@ -10,9 +10,11 @@
   </script>
 {% endif %}
 
-<script data-goatcounter="https://skelz0r-blog.goatcounter.com/count"
+{% if site.gc_analytics %}
+<script data-goatcounter="https://{{ site.gc_analytics }}.goatcounter.com/count"
         async src="//gc.zgo.at/count.js">
 </script>
+{% endif %}
 
 {% asset vendor.js %}
 
