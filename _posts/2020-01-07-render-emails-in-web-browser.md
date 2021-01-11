@@ -3,7 +3,9 @@ layout: post
 title: 💌 Render emails from ActionMailer in HTML views
 description: A walkthrough on how to dig inside rails base code.
 thumb_image: render-emails-in-views-in-web-browser-thumb.jpg
-tags: [rails]
+tags:
+  - english
+  - rails
 ---
 
 **tldr**: You can scroll to the [Solution](#solution) section if you want the final code.

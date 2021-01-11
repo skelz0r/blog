@@ -3,7 +3,9 @@ layout: post
 title: 🌄 Configure ActiveStorage with OVH OpenStack
 description: A step-by-step tutorial to get a private bucket hosted on OVH, configured to work with ActiveStorage.
 thumb_image: activestorage-ovh/meta.png
-tags: [rails]
+tags:
+  - english
+  - rails
 ---
 
 Configure ActiveStorage with OpenStack can be a little bit tricky, this blog post
