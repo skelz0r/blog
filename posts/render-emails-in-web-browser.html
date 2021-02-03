@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <title>Skelz0r's blog | 💌 Render emails from ActionMailer in HTML views</title>
+  <meta name="description" content="A walkthrough on how to dig inside rails base code." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta property="og:title" content="💌 Render emails from ActionMailer in HTML views" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://blog.skelz0r.fr/posts/render-emails-in-web-browser" />
+  <meta property="og:description" content="A walkthrough on how to dig inside rails base code." />
+  <meta property="og:site_name" content="Skelz0r's blog" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:url" content="https://blog.skelz0r.fr/posts/render-emails-in-web-browser" />
+  <meta name="twitter:title" content="💌 Render emails from ActionMailer in HTML views" />
+  <meta name="twitter:description" content="A walkthrough on how to dig inside rails base code." />
+
+   
+  <meta
+    property="og:image"
+    content="https://blog.skelz0r.fr/assets/render-emails-in-views-in-web-browser-thumb-101117218c8f7680947d4430a8d13ac1313c5f68c220c7bdde43fbb366160108.jpg"
+  />
+  <meta
+    name="twitter:image"
+    content="https://blog.skelz0r.fr/assets/render-emails-in-views-in-web-browser-thumb-101117218c8f7680947d4430a8d13ac1313c5f68c220c7bdde43fbb366160108.jpg"
+  />
+   
+
+  <link
+    href="https://blog.skelz0r.fr/feed.xml"
+    type="application/rss+xml"
+    rel="alternate"
+    title="Skelz0r's blog Last 10 blog posts"
+  />
+
+    
+  <link
+    rel="icon"
+    type="image/x-icon"
+    href="/assets/favicon-light-2fc9a2d675e2305136284777759d667667b29d7a63b169fd502e95388eae284a.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="/assets/apple-touch-icon-light-d2652717b4f54e36ea5cc78c6fc16f3f1fafcbb9d4357a62f9f4c2982cead96c.png"
+  />
+  <link
+    rel="stylesheet"
+    type="text/css"
+    title="light"
+    id="light"
+    href="/assets/light-bdd7976866160e725546b7e26658562dab5fcecabcbbbc8e365d4a50ab15f308.css"
+  />
+  <link
+    rel="stylesheet"
+    type="text/css"
+    title="dark"
+    id="dark"
+    href="/assets/dark-8d74db733f1fcae5f78c1c29ced43fe227351de91bb8f087086eea8748da90bb.css"
+    disabled="true"
+  />
+   
+
+  <link rel="webmention" href="https://webmention.io/username/webmention" />
+  <link rel="pingback" href="https://webmention.io/username/xmlrpc" />
+</head>
+
+<body>
+  <main>
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav scrollappear">
+  <a href="/" class="header-logo" title="Skelz0r's blog">
+    ✏️ Skelz0r's blog
+  </a>
+  <ul class="header-links">
+    
+    
+      <li>
+        <a href="https://twitter.com/sklzr" rel="noreferrer noopener" target="_blank" title="Twitter">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-twitter">
+  <use href="/assets/twitter-8842c33965263ad1b03a978406826677a668f94125d5837e70ab83f24b3213a7.svg#icon-twitter" xlink:href="/assets/twitter-8842c33965263ad1b03a978406826677a668f94125d5837e70ab83f24b3213a7.svg#icon-twitter"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+      <li>
+        <a href="https://github.com/skelz0r" rel="noreferrer noopener" target="_blank" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-github">
+  <use href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github" xlink:href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-rss">
+  <use href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss" xlink:href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+      <li>
+        <a onclick="toggle()" title="Toggle Theme">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-theme">
+  <use href="/assets/theme-66869e0bf8dab34bae1c86bda400327b772e0be69e8dc28d3ede896e771320ed.svg#icon-theme" xlink:href="/assets/theme-66869e0bf8dab34bae1c86bda400327b772e0be69e8dc28d3ede896e771320ed.svg#icon-theme"></use>
+</svg>
+
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+
+        <article class="article scrollappear">
+          <header class="article-header">
+            <h1>💌 Render emails from ActionMailer in HTML views</h1>
+            <p>A walkthrough on how to dig inside rails base code.</p>
+            <div class="article-list-footer">
+  <span class="article-list-date">
+    January 7, 2020
+  </span>
+  <span class="article-list-divider">-</span>
+  <span class="article-list-minutes">
+    
+    
+      4 minute read
+    
+  </span>
+  <span class="article-list-divider">-</span>
+  <div class="article-list-tags">
+    
+      
+      <a href="/tag/english" title="See all posts with tag 'EN'">EN</a>
+    
+      
+      <a href="/tag/rails" title="See all posts with tag 'Ruby on Rails'">Ruby on Rails</a>
+    
+  </div>
+</div>
+          </header>
+
+          <div class="article-content">
+            <p><strong>tldr</strong>: You can scroll to the <a href="#solution">Solution</a> section if you want the final code.</p>
+
+<p>Sometimes you need to let your users preview some emails, like
+transactional emails customized by them with some content or style.</p>
+
+<p>I have to built a preview system like this for
+<a href="https://www.superdocu.com/?utm_source=skelz0r&amp;utm_medium=blog&amp;utm_campaign=1">Superdocu</a>, and I thought it’ll
+be an easy task thanks to
+<a href="https://guides.rubyonrails.org/action_mailer_basics.html#previewing-emails">ActionMailer::Preview</a>.
+But it wasn’t : there’s no officiel documentation for embedding this feature in
+production.</p>
+
+<p>There’s
+<a href="https://stackoverflow.com/questions/27453578/rails-4-email-preview-in-production/39399116">plenty</a>
+<a href="https://stackoverflow.com/questions/28614994/rails-email-preview-for-users-in-production">of</a>
+<a href="https://stackoverflow.com/questions/7165064/how-do-i-preview-emails-in-rails">topics</a>
+<a href="https://stackoverflow.com/questions/39187800/previewing-mailers-on-non-development-tiers">on</a>
+<a href="https://stackoverflow.com/questions/44911339/mailer-preview-not-working">StackOverflow</a>,
+but none of them explains how to extract or use the rails preview system used in
+development.</p>
+
+<p>There’s also a few gems (<a href="https://github.com/markets/maily">Maily</a> or <a href="https://github.com/glebm/rails_email_preview">Rails Email Preview</a> for example),
+but they use rails engines, which is not really end-user friendly.</p>
+
+<p>Finally, the default preview system used by <code class="highlighter-rouge">ActionMailer::Preview</code> is not a
+valid solution, because it can’t be easily integrated ou customized in the
+application.</p>
+
+<p>I tried to call the mailer directly and render its html part (decoded) like
+this:</p>
+
+<p><strong>Controller</strong></p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="vi">@preview</span> <span class="o">=</span> <span class="no">UserMailer</span><span class="p">.</span><span class="nf">signup</span><span class="p">(</span><span class="n">user</span><span class="p">).</span><span class="nf">html_part</span><span class="p">.</span><span class="nf">decoded</span></code></pre></figure>
+
+<p><strong>View</strong></p>
+
+<figure class="highlight"><pre><code class="language-erb" data-lang="erb"><span class="cp">&lt;%=</span> <span class="vi">@preview</span><span class="p">.</span><span class="nf">html_safe</span> <span class="cp">%&gt;</span></code></pre></figure>
+
+<p>But it didn’t work, because of inline attachments which aren’t correctly
+decoded 😕</p>
+
+<p>So I have to understand how rails emails previewing system works and how to use it in order to
+implement my previewing system, and avoid to rewrite in html my mailers’ views
+(it uses the <a href="https://mjml.io/">mjml</a>
+framework, so mjml templates and not html templates).</p>
+
+<h2 id="investigating-how-to-extract-the-email-previewing-system">Investigating how to extract the email previewing system</h2>
+
+<p>I started by investigating rails logs to find the name of the controller which
+handles the preview action : <code class="highlighter-rouge">Rails::MailersController</code></p>
+
+<p>I searched in the <a href="https://github.com/rails/rails">rails basecode</a>, with the
+controller named, which can be find
+<a href="https://github.com/rails/rails/blob/master/railties/lib/rails/mailers_controller.rb">here</a>,
+in the railties folder.</p>
+
+<p>It has multiple actions, but it’s the <code class="highlighter-rouge">preview</code> action which is interesting for us :
+it handles both the entire page and the iframe part.</p>
+
+<p>Here is the <code class="highlighter-rouge">preview</code> action code 👇</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">preview</span>
+  <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="ss">:path</span><span class="p">]</span> <span class="o">==</span> <span class="vi">@preview</span><span class="p">.</span><span class="nf">preview_name</span>
+    <span class="vi">@page_title</span> <span class="o">=</span> <span class="s2">"Mailer Previews for </span><span class="si">#{</span><span class="vi">@preview</span><span class="p">.</span><span class="nf">preview_name</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">render</span> <span class="ss">action: </span><span class="s2">"mailer"</span>
+  <span class="k">else</span>
+    <span class="vi">@email_action</span> <span class="o">=</span> <span class="no">File</span><span class="p">.</span><span class="nf">basename</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="ss">:path</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="vi">@preview</span><span class="p">.</span><span class="nf">email_exists?</span><span class="p">(</span><span class="vi">@email_action</span><span class="p">)</span>
+      <span class="vi">@page_title</span> <span class="o">=</span> <span class="s2">"Mailer Preview for </span><span class="si">#{</span><span class="vi">@preview</span><span class="p">.</span><span class="nf">preview_name</span><span class="si">}</span><span class="s2">#</span><span class="si">#{</span><span class="vi">@email_action</span><span class="si">}</span><span class="s2">"</span>
+      <span class="vi">@email</span> <span class="o">=</span> <span class="vi">@preview</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="vi">@email_action</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+      <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="ss">:part</span><span class="p">]</span>
+        <span class="n">part_type</span> <span class="o">=</span> <span class="no">Mime</span><span class="o">::</span><span class="no">Type</span><span class="p">.</span><span class="nf">lookup</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="ss">:part</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">part</span> <span class="o">=</span> <span class="n">find_part</span><span class="p">(</span><span class="n">part_type</span><span class="p">)</span>
+          <span class="n">response</span><span class="p">.</span><span class="nf">content_type</span> <span class="o">=</span> <span class="n">part_type</span>
+          <span class="n">render</span> <span class="ss">plain: </span><span class="n">part</span><span class="p">.</span><span class="nf">respond_to?</span><span class="p">(</span><span class="ss">:decoded</span><span class="p">)</span> <span class="p">?</span> <span class="n">part</span><span class="p">.</span><span class="nf">decoded</span> <span class="p">:</span> <span class="n">part</span>
+        <span class="k">else</span>
+          <span class="k">raise</span> <span class="no">AbstractController</span><span class="o">::</span><span class="no">ActionNotFound</span><span class="p">,</span> <span class="s2">"Email part '</span><span class="si">#{</span><span class="n">part_type</span><span class="si">}</span><span class="s2">' not found in </span><span class="si">#{</span><span class="vi">@preview</span><span class="p">.</span><span class="nf">name</span><span class="si">}</span><span class="s2">#</span><span class="si">#{</span><span class="vi">@email_action</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">end</span>
+      <span class="k">else</span>
+        <span class="vi">@part</span> <span class="o">=</span> <span class="n">find_preferred_part</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="nf">format</span><span class="p">,</span> <span class="no">Mime</span><span class="p">[</span><span class="ss">:html</span><span class="p">],</span> <span class="no">Mime</span><span class="p">[</span><span class="ss">:text</span><span class="p">])</span>
+        <span class="n">render</span> <span class="ss">action: </span><span class="s2">"email"</span><span class="p">,</span> <span class="ss">layout: </span><span class="kp">false</span><span class="p">,</span> <span class="ss">formats: </span><span class="p">[</span><span class="ss">:html</span><span class="p">]</span>
+      <span class="k">end</span>
+    <span class="k">else</span>
+      <span class="k">raise</span> <span class="no">AbstractController</span><span class="o">::</span><span class="no">ActionNotFound</span><span class="p">,</span> <span class="s2">"Email '</span><span class="si">#{</span><span class="vi">@email_action</span><span class="si">}</span><span class="s2">' not found in </span><span class="si">#{</span><span class="vi">@preview</span><span class="p">.</span><span class="nf">name</span><span class="si">}</span><span class="s2">"</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>The first condition handles when there’s no action in the path. For example if you have an
+actionmail preview for <code class="highlighter-rouge">UserMailer</code>, it will renders available preview methods.</p>
+
+<p>The second part (in the first else)
+handles both the view with iframe and the mailer content part
+inside iframe (
+<a href="https://github.com/rails/rails/blob/master/railties/lib/rails/templates/rails/mailers/email.html.erb#L125">the content part action is called here</a>
+).</p>
+
+<p>Now I have to understand how the final render works on this preview system:
+there’s a class which handles this magic, which is
+<a href="https://github.com/rails/rails/blob/master/actionmailer/lib/action_mailer/inline_preview_interceptor.rb">ActionMailer::InlinePreviewInterceptor</a>.</p>
+
+<p>This class replace converts image tag src attributes that use inline <code class="highlighter-rouge">cid:</code> style URLs
+to <code class="highlighter-rouge">data:</code> style URLs so that they are visible when previewing an HTML email in a web browser.</p>
+
+<p>In our <code class="highlighter-rouge">preview</code> action, this class is called here:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">  <span class="vi">@email</span> <span class="o">=</span> <span class="vi">@preview</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="vi">@email_action</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></code></pre></figure>
+
+<p>The <code class="highlighter-rouge">call</code> method from <code class="highlighter-rouge">ActionMailer::Preview</code> class calls a private method
+<code class="highlighter-rouge">inform_preview_interceptors</code>
+(
+<a href="https://github.com/rails/rails/blob/master/actionmailer/lib/action_mailer/preview.rb#L137">source</a>
+), which calls the
+<code class="highlighter-rouge">ActionMailer::InlinePreviewInterceptor</code>’s <code class="highlighter-rouge">transform</code> method
+(
+<a href="https://github.com/rails/rails/blob/master/actionmailer/lib/action_mailer/inline_preview_interceptor.rb#L28">source</a>
+),
+which does the trick on images 🪄</p>
+
+<h2 id="solution">Solution</h2>
+
+<p>Thanks to this investigation, I managed to fix the original implementation like
+this:</p>
+
+<p><strong>Controller</strong></p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">email</span> <span class="o">=</span> <span class="no">UserMailer</span><span class="p">.</span><span class="nf">signup</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+<span class="vi">@preview</span> <span class="o">=</span> <span class="no">ActionMailer</span><span class="o">::</span><span class="no">InlinePreviewInterceptor</span><span class="p">.</span><span class="nf">previewing_email</span><span class="p">(</span><span class="n">email</span><span class="p">).</span><span class="nf">html_part</span><span class="p">.</span><span class="nf">decoded</span></code></pre></figure>
+
+<p><strong>View</strong></p>
+
+<figure class="highlight"><pre><code class="language-erb" data-lang="erb"><span class="cp">&lt;%=</span> <span class="vi">@preview</span><span class="p">.</span><span class="nf">html_safe</span> <span class="cp">%&gt;</span></code></pre></figure>
+
+<p>Have a nice day 🙃</p>
+
+          </div>
+          <div class="article-share">
+            
+            
+            <a href="https://twitter.com/intent/tweet?text=%F0%9F%92%8C+Render+emails+from+ActionMailer+in+HTML+views%20-%20https://blog.skelz0r.fr/posts/render-emails-in-web-browser%20by%20@sklzr" title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z"/></svg>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer
+  class="footer scrollappear"
+>
+  <p>
+    For any comments or thoughts, please reach me on twitter
+    <a href="https://twitter.com/sklzr" rel="me">@sklzr</a> ✌️
+  </p>
+   
+  <p>
+    <small>
+      This blog uses basic analytics through GoatCounter, which does not track
+      any personal data. You can check web analytics by following
+      <a href="https://skelz0r-blog.goatcounter.com/">this link</a>.
+    </small>
+  </p>
+  
+</footer>
+
+      </div>
+    </div>
+  </main>
+  
+
+
+<script data-goatcounter="https://skelz0r-blog.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js">
+</script>
+
+
+<script src="/assets/vendor-130c9c254effc51f3283620bc635851da7b99c20901216948f11ba72ee13317f.js" type="text/javascript"></script>
+
+
+  <script src="/assets/webfonts-96493456d319d1bf419afdf8701552d4d486fee6afd304897d4fd81eb4e0cc0b.js" type="text/javascript"></script>
+
+
+
+  <script src="/assets/scrollappear-e2da8ea567e418637e31266cc5302126eaa79f62a2273739086358b589a89ee6.js" type="text/javascript"></script>
+
+
+<script src="/assets/application-cfde13ac81ddaf4351b2e739603e2baf688d0fcc9aba613fe62bbb1c7b037fb9.js" type="text/javascript"></script>
+
+
+  <script src="/assets/themetoggle-df0d3d73164dc26dffbd630182ae4d0dfa7bee6b694a2b5d565d73595b582bbf.js" type="text/javascript"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <title>Skelz0r's blog | 🌄 Configure ActiveStorage with OVH OpenStack</title>
+  <meta name="description" content="A step-by-step tutorial to get a private bucket hosted on OVH, configured to work with ActiveStorage." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta property="og:title" content="🌄 Configure ActiveStorage with OVH OpenStack" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://blog.skelz0r.fr/posts/activestorage-ovh" />
+  <meta property="og:description" content="A step-by-step tutorial to get a private bucket hosted on OVH, configured to work with ActiveStorage." />
+  <meta property="og:site_name" content="Skelz0r's blog" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:url" content="https://blog.skelz0r.fr/posts/activestorage-ovh" />
+  <meta name="twitter:title" content="🌄 Configure ActiveStorage with OVH OpenStack" />
+  <meta name="twitter:description" content="A step-by-step tutorial to get a private bucket hosted on OVH, configured to work with ActiveStorage." />
+
+   
+  <meta
+    property="og:image"
+    content="https://blog.skelz0r.fr/assets/activestorage-ovh/meta-821870922083088d236887c3028a6444bbb11b7dd807f3a9d76771e32b3ef1ef.png"
+  />
+  <meta
+    name="twitter:image"
+    content="https://blog.skelz0r.fr/assets/activestorage-ovh/meta-821870922083088d236887c3028a6444bbb11b7dd807f3a9d76771e32b3ef1ef.png"
+  />
+   
+
+  <link
+    href="https://blog.skelz0r.fr/feed.xml"
+    type="application/rss+xml"
+    rel="alternate"
+    title="Skelz0r's blog Last 10 blog posts"
+  />
+
+    
+  <link
+    rel="icon"
+    type="image/x-icon"
+    href="/assets/favicon-light-2fc9a2d675e2305136284777759d667667b29d7a63b169fd502e95388eae284a.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="/assets/apple-touch-icon-light-d2652717b4f54e36ea5cc78c6fc16f3f1fafcbb9d4357a62f9f4c2982cead96c.png"
+  />
+  <link
+    rel="stylesheet"
+    type="text/css"
+    title="light"
+    id="light"
+    href="/assets/light-bdd7976866160e725546b7e26658562dab5fcecabcbbbc8e365d4a50ab15f308.css"
+  />
+  <link
+    rel="stylesheet"
+    type="text/css"
+    title="dark"
+    id="dark"
+    href="/assets/dark-8d74db733f1fcae5f78c1c29ced43fe227351de91bb8f087086eea8748da90bb.css"
+    disabled="true"
+  />
+   
+
+  <link rel="webmention" href="https://webmention.io/username/webmention" />
+  <link rel="pingback" href="https://webmention.io/username/xmlrpc" />
+</head>
+
+<body>
+  <main>
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav scrollappear">
+  <a href="/" class="header-logo" title="Skelz0r's blog">
+    ✏️ Skelz0r's blog
+  </a>
+  <ul class="header-links">
+    
+    
+      <li>
+        <a href="https://twitter.com/sklzr" rel="noreferrer noopener" target="_blank" title="Twitter">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-twitter">
+  <use href="/assets/twitter-8842c33965263ad1b03a978406826677a668f94125d5837e70ab83f24b3213a7.svg#icon-twitter" xlink:href="/assets/twitter-8842c33965263ad1b03a978406826677a668f94125d5837e70ab83f24b3213a7.svg#icon-twitter"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+      <li>
+        <a href="https://github.com/skelz0r" rel="noreferrer noopener" target="_blank" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-github">
+  <use href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github" xlink:href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-rss">
+  <use href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss" xlink:href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+      <li>
+        <a onclick="toggle()" title="Toggle Theme">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-theme">
+  <use href="/assets/theme-66869e0bf8dab34bae1c86bda400327b772e0be69e8dc28d3ede896e771320ed.svg#icon-theme" xlink:href="/assets/theme-66869e0bf8dab34bae1c86bda400327b772e0be69e8dc28d3ede896e771320ed.svg#icon-theme"></use>
+</svg>
+
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+
+        <article class="article scrollappear">
+          <header class="article-header">
+            <h1>🌄 Configure ActiveStorage with OVH OpenStack</h1>
+            <p>A step-by-step tutorial to get a private bucket hosted on OVH, configured to work with ActiveStorage.</p>
+            <div class="article-list-footer">
+  <span class="article-list-date">
+    January 4, 2020
+  </span>
+  <span class="article-list-divider">-</span>
+  <span class="article-list-minutes">
+    
+    
+      5 minute read
+    
+  </span>
+  <span class="article-list-divider">-</span>
+  <div class="article-list-tags">
+    
+      
+      <a href="/tag/english" title="See all posts with tag 'EN'">EN</a>
+    
+      
+      <a href="/tag/rails" title="See all posts with tag 'Ruby on Rails'">Ruby on Rails</a>
+    
+  </div>
+</div>
+          </header>
+
+          <div class="article-content">
+            <p>Configure ActiveStorage with OpenStack can be a little bit tricky, this blog post
+explains how to configure it with OVH.</p>
+
+<p>In this tutorial, we’re going to:</p>
+<ol>
+  <li>Setup a private bucket on OVH</li>
+  <li>Install and setup ActiveStorage OpenStack</li>
+  <li>Configure user access</li>
+  <li>Configure temporary url key, required by OpenStack</li>
+  <li>🍹</li>
+</ol>
+
+<p>This setup has been tested on rails 6.x, but it should work with rails &gt;= 5.2.2
+(as specified in <a href="https://github.com/chaadow/activestorage-openstack/blob/master/activestorage-openstack.gemspec#L25">ActiveStorage::OpenStack
+gemspec</a>)</p>
+
+<h2 id="1-setup-object-storage-on-ovh-public-cloud">1. Setup Object Storage on OVH Public Cloud</h2>
+
+<p>First, you have to create a new public cloud project in order to use Object
+Storage.</p>
+
+<p>Follow <a href="https://www.ovh.com/manager/public-cloud/#/pci/projects/new">this link</a>
+in order to start. You should have the screen below 👇</p>
+
+<p><img src="/assets/activestorage-ovh/create-public-cloud-project-92f4a868fef11172faf0ae075237d3f443c339046430db03b1bcbc7d2ac0b0b3.png" /></p>
+
+<p>Enter a project name and a credit card in order to create your project.</p>
+
+<p>When your new project is ready, click on the <strong>Object Storage</strong> link in the side
+panel.</p>
+
+<p><img src="/assets/activestorage-ovh/create-object-container-44938922e58466e0d15a7aa2fb8d9f8c0301d63e9ac23b6a3d9a7f117706001b.png" /></p>
+
+<p>Click on the <strong>Create an object storage</strong> call to action, then:</p>
+
+<ol>
+  <li>Choose a location (like <em>Strasbourg (SBG)</em>)</li>
+  <li>Choose a type of container (<em>Private</em> or <em>Public</em>)</li>
+  <li>Choose a name for your container</li>
+</ol>
+
+<p>For the example, I choose Strasbourg, a private bucket and
+<code class="highlighter-rouge">example-private-bucket</code> as name :</p>
+
+<p><img src="/assets/activestorage-ovh/example-private-bucket-created-2166c9a13a7c1ff157c15b2caa02a890ea51137f0b80ccf9142ebe0c6dd2bb1b.png" /></p>
+
+<p>At this point you have created a bucket which can be used in ActiveStorage.</p>
+
+<h2 id="2-install-and-configure-activestorage-openstack">2. Install and configure ActiveStorage OpenStack</h2>
+
+<p>We’re going to use the
+<a href="https://github.com/chaadow/activestorage-openstack">ActiveStorage::OpenStack</a>
+gem, which adds the openstack swift provider as an ActiveStorage service.</p>
+
+<p>First, adds the gem in your Gemfile.</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">'activestorage-openstack'</span><span class="p">,</span> <span class="s1">'1.0'</span></code></pre></figure>
+
+<p>Then run <code class="highlighter-rouge">bundle</code>.</p>
+
+<p>You can configure the <code class="highlighter-rouge">config/storage.yml</code> file now:</p>
+
+<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="na">ovh</span><span class="pi">:</span>
+  <span class="na">service</span><span class="pi">:</span> <span class="s">OpenStack</span>
+  <span class="na">container</span><span class="pi">:</span> <span class="s1">'</span><span class="s">example-private-bucket'</span>                   <span class="c1"># Your bucket's name</span>
+  <span class="na">credentials</span><span class="pi">:</span>
+    <span class="na">openstack_auth_url</span><span class="pi">:</span> <span class="s1">'</span><span class="s">https://auth.cloud.ovh.net/'</span>   <span class="c1"># URL of the OVH auth url</span>
+    <span class="na">openstack_username</span><span class="pi">:</span> <span class="s">OVH_OPENSTACK_USER</span>              <span class="c1"># TBD in 2.</span>
+    <span class="na">openstack_api_key</span><span class="pi">:</span> <span class="s">OVH_OPENSTACK_PASSWORD</span>           <span class="c1"># TBD in 2.</span>
+    <span class="na">openstack_region</span><span class="pi">:</span> <span class="s1">'</span><span class="s">SBG'</span>                             <span class="c1"># The region acronym</span>
+    <span class="na">openstack_temp_url_key</span><span class="pi">:</span> <span class="s">OVH_OPENSTACK_TEMP_URL_KEY</span>  <span class="c1"># TBD in 3.</span></code></pre></figure>
+
+<p>And in your environment file (for example in <code class="highlighter-rouge">config/environments/production.rb</code>):</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">  <span class="n">config</span><span class="p">.</span><span class="nf">active_storage</span><span class="p">.</span><span class="nf">service</span> <span class="o">=</span> <span class="ss">:ovh</span></code></pre></figure>
+
+<p>You can find more information on basic configuration in the <a href="https://github.com/chaadow/activestorage-openstack#installation">gem’s
+README</a></p>
+
+<p>At this point, there’s still 2 steps to achieve:</p>
+
+<ol>
+  <li>Configure a user access to our bucket (for <code class="highlighter-rouge">OVH_OPENSTACK_USER</code> and
+<code class="highlighter-rouge">OVH_OPENSTACK_PASSWORD</code> values)</li>
+  <li>Setup the temporary url key (for <code class="highlighter-rouge">OVH_OPENSTACK_TEMP_URL_KEY</code>)</li>
+</ol>
+
+<h2 id="3-configure-user-access">3. Configure user access</h2>
+
+<p>Back to the OVH Public Cloud interface: you have to create a new user with an
+access to your private bucket.</p>
+
+<p>You can achieve this by clicking on <strong>Users &amp; Roles</strong> link in the side panel.</p>
+
+<p><img src="/assets/activestorage-ovh/create-user-0aaa21b0e467cda8768afcea9a9e899d0b7f5dda8b2036aa739be35fc3b76dec.png" /></p>
+
+<p>Click on the <strong>Create User</strong> call to action, then:</p>
+
+<ol>
+  <li>Add a description (not really important)</li>
+  <li>Add at least <strong>ObjectStore operator</strong> as Role</li>
+</ol>
+
+<p>The new user has been added and should be ready soon. Don’t forget to note the
+generated password, which we’ll be used in our configuration
+(you can generate a new password later by
+clicking on the three dots at the end of the user line).</p>
+
+<p><img src="/assets/activestorage-ovh/user-created-with-password-2e2210cb8bb745640ec487a28a7a4ab2f9562fa4921faf8436754bb0341f0b37.png" /></p>
+
+<p>(The password in the screenshot has been obfuscated ofc 🙃)</p>
+
+<p>At this point, our configuration is (with the credentials extracted from the
+screenshot below):</p>
+
+<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="na">ovh</span><span class="pi">:</span>
+  <span class="na">service</span><span class="pi">:</span> <span class="s">OpenStack</span>
+  <span class="na">container</span><span class="pi">:</span> <span class="s1">'</span><span class="s">example-private-bucket'</span>                   <span class="c1"># Your bucket's name</span>
+  <span class="na">credentials</span><span class="pi">:</span>
+    <span class="na">openstack_auth_url</span><span class="pi">:</span> <span class="s1">'</span><span class="s">https://auth.cloud.ovh.net/'</span>   <span class="c1"># URL of the OVH auth url</span>
+    <span class="na">openstack_username</span><span class="pi">:</span> <span class="s1">'</span><span class="s">user-sebDztR4d363'</span>             <span class="c1"># username created in this section</span>
+    <span class="na">openstack_api_key</span><span class="pi">:</span> <span class="s1">'</span><span class="s">28bjtXXXXXXXXXXXXXXXXXXXXX'</span>     <span class="c1"># password created in this section</span>
+    <span class="na">openstack_region</span><span class="pi">:</span> <span class="s1">'</span><span class="s">SBG'</span>                             <span class="c1"># The region acronym</span>
+    <span class="na">openstack_temp_url_key</span><span class="pi">:</span> <span class="s">OVH_OPENSTACK_TEMP_URL_KEY</span>  <span class="c1"># TBD in 3.</span></code></pre></figure>
+
+<p>It remains the temporary url key (<code class="highlighter-rouge">OVH_OPENSTACK_TEMP_URL_KEY</code> in this config).</p>
+
+<h2 id="4-configure-temporary-url-key">4. Configure temporary url key</h2>
+
+<p>In order to create expiring URLs (required by OpenStack), you have to setup a
+temporary url key.</p>
+
+<p>This value has to be choose by you, let’s say for the example it’ll be
+<code class="highlighter-rouge">SuperPrivateKeyOfDoom</code>.</p>
+
+<p>It can be done with the <code class="highlighter-rouge">swift</code> client, but it can be done with the
+<code class="highlighter-rouge">fog-openstack</code> gem too (which is a dependency of <code class="highlighter-rouge">activestorage-openstack</code>,
+which is nice).</p>
+
+<p>Here is a working snippet (which required <code class="highlighter-rouge">dotenv</code> gem, but it can be easily
+adapt if you don’t use it):</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#!/usr/bin/env ruby</span>
+
+<span class="k">unless</span> <span class="no">ARGV</span><span class="p">.</span><span class="nf">length</span> <span class="o">==</span> <span class="mi">1</span>
+  <span class="nb">print</span> <span class="s2">"Usage: </span><span class="si">#{</span><span class="vg">$PROGRAM_NAME</span><span class="si">}</span><span class="s2"> temp_url_key</span><span class="se">\n</span><span class="s2">"</span>
+  <span class="nb">exit</span> <span class="mi">1</span>
+<span class="k">end</span>
+
+<span class="nb">require</span> <span class="s1">'dotenv'</span>
+<span class="no">Dotenv</span><span class="p">.</span><span class="nf">load</span>
+
+<span class="sx">%w[
+  OVH_OPENSTACK_URL
+  OVH_OPENSTACK_REGION_NAME
+  OVH_OPENSTACK_USER
+  OVH_OPENSTACK_PASSWORD
+]</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">key</span><span class="o">|</span>
+  <span class="k">if</span> <span class="no">ENV</span><span class="p">[</span><span class="n">key</span><span class="p">].</span><span class="nf">nil?</span>
+    <span class="nb">print</span> <span class="s2">"Required key '</span><span class="si">#{</span><span class="n">key</span><span class="si">}</span><span class="s2">' is missing</span><span class="se">\n</span><span class="s2">"</span>
+    <span class="nb">exit</span> <span class="mi">1</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">connection_params</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="ss">openstack_auth_url:   </span><span class="no">ENV</span><span class="p">[</span><span class="s1">'OVH_OPENSTACK_URL'</span><span class="p">],</span>
+  <span class="ss">openstack_username:   </span><span class="no">ENV</span><span class="p">[</span><span class="s1">'OVH_OPENSTACK_USER'</span><span class="p">],</span>
+  <span class="ss">openstack_api_key:    </span><span class="no">ENV</span><span class="p">[</span><span class="s1">'OVH_OPENSTACK_PASSWORD'</span><span class="p">],</span>
+  <span class="ss">openstack_region:     </span><span class="no">ENV</span><span class="p">[</span><span class="s1">'OVH_OPENSTACK_REGION_NAME'</span><span class="p">],</span>
+<span class="p">}</span>
+
+<span class="nb">require</span> <span class="s1">'fog/openstack'</span>
+
+<span class="k">begin</span>
+  <span class="n">connection</span> <span class="o">=</span> <span class="no">Fog</span><span class="o">::</span><span class="no">OpenStack</span><span class="o">::</span><span class="no">Storage</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">connection_params</span><span class="p">)</span>
+  <span class="n">connection</span><span class="p">.</span><span class="nf">post_set_meta_temp_url_key</span><span class="p">(</span><span class="no">ARGV</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+  <span class="nb">print</span> <span class="s2">"OK, please change OVH_OPENSTACK_TEMP_URL_KEY env variable with the following value: </span><span class="si">#{</span><span class="no">ARGV</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">rescue</span> <span class="no">Excon</span><span class="o">::</span><span class="no">Error</span><span class="o">::</span><span class="no">Unauthorized</span>
+  <span class="nb">print</span> <span class="s1">'Unauthorized, check your credentials'</span>
+  <span class="nb">exit</span> <span class="mi">2</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>This snippet is pretty straightforward: it creates a new connection object for
+the storage stack, with all of our settings defined below, and set (as <a href="https://www.rubydoc.info/gems/fog-openstack/0.1.1/Fog/Storage/OpenStack/Real:post_set_meta_temp_url_key">specified by the
+gem</a>)
+the <strong>Temp URL key</strong>.</p>
+
+<p>You can run this snippet like this:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">./set_ovh_openstack_temp_url_key.rb SuperPrivateKeyOfDoom</code></pre></figure>
+
+<p>If the script succeed, you can change the value of <code class="highlighter-rouge">OVH_OPENSTACK_TEMP_URL_KEY</code>
+in your configuration:</p>
+
+<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="na">ovh</span><span class="pi">:</span>
+  <span class="na">service</span><span class="pi">:</span> <span class="s">OpenStack</span>
+  <span class="na">container</span><span class="pi">:</span> <span class="s1">'</span><span class="s">example-private-bucket'</span>                   <span class="c1"># Your bucket's name</span>
+  <span class="na">credentials</span><span class="pi">:</span>
+    <span class="na">openstack_auth_url</span><span class="pi">:</span> <span class="s1">'</span><span class="s">https://auth.cloud.ovh.net/'</span>   <span class="c1"># URL of the OVH auth url</span>
+    <span class="na">openstack_username</span><span class="pi">:</span> <span class="s1">'</span><span class="s">user-sebDztR4d363'</span>
+    <span class="na">openstack_api_key</span><span class="pi">:</span> <span class="s1">'</span><span class="s">28bjtXXXXXXXXXXXXXXXXXXXXX'</span>
+    <span class="na">openstack_region</span><span class="pi">:</span> <span class="s1">'</span><span class="s">SBG'</span>                             <span class="c1"># The region acronym</span>
+    <span class="na">openstack_temp_url_key</span><span class="pi">:</span> <span class="s1">'</span><span class="s">SuperPrivateKeyOfDoom'</span></code></pre></figure>
+
+<p>Check <a href="https://docs.openstack.org/swift/latest/api/temporary_url_middleware.html#secret-keys">this
+link</a>
+for more information on the temporary url middleware used by OpenStack.</p>
+
+<h2 id="5-">5. 🍹</h2>
+
+<p>Everything should be up and running now 🚀</p>
+
+<p>Have a great day 👋</p>
+
+          </div>
+          <div class="article-share">
+            
+            
+            <a href="https://twitter.com/intent/tweet?text=%F0%9F%8C%84+Configure+ActiveStorage+with+OVH+OpenStack%20-%20https://blog.skelz0r.fr/posts/activestorage-ovh%20by%20@sklzr" title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z"/></svg>
+            </a>
+          </div>
+
+          
+        </article>
+        <footer
+  class="footer scrollappear"
+>
+  <p>
+    For any comments or thoughts, please reach me on twitter
+    <a href="https://twitter.com/sklzr" rel="me">@sklzr</a> ✌️
+  </p>
+   
+  <p>
+    <small>
+      This blog uses basic analytics through GoatCounter, which does not track
+      any personal data. You can check web analytics by following
+      <a href="https://skelz0r-blog.goatcounter.com/">this link</a>.
+    </small>
+  </p>
+  
+</footer>
+
+      </div>
+    </div>
+  </main>
+  
+
+
+<script data-goatcounter="https://skelz0r-blog.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js">
+</script>
+
+
+<script src="/assets/vendor-130c9c254effc51f3283620bc635851da7b99c20901216948f11ba72ee13317f.js" type="text/javascript"></script>
+
+
+  <script src="/assets/webfonts-96493456d319d1bf419afdf8701552d4d486fee6afd304897d4fd81eb4e0cc0b.js" type="text/javascript"></script>
+
+
+
+  <script src="/assets/scrollappear-e2da8ea567e418637e31266cc5302126eaa79f62a2273739086358b589a89ee6.js" type="text/javascript"></script>
+
+
+<script src="/assets/application-cfde13ac81ddaf4351b2e739603e2baf688d0fcc9aba613fe62bbb1c7b037fb9.js" type="text/javascript"></script>
+
+
+  <script src="/assets/themetoggle-df0d3d73164dc26dffbd630182ae4d0dfa7bee6b694a2b5d565d73595b582bbf.js" type="text/javascript"></script>
+
+
+</body>
+</html>

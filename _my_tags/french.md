@@ -1,4 +1,0 @@
----
-slug: french
-name: FR
----

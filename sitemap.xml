@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>https://blog.skelz0r.fr/tag/english/</loc>
+<lastmod>2021-02-03T17:25:48+01:00</lastmod>
+</url>
+<url>
+<loc>https://blog.skelz0r.fr/tag/french/</loc>
+<lastmod>2021-02-03T17:25:48+01:00</lastmod>
+</url>
+<url>
+<loc>https://blog.skelz0r.fr/tag/rails/</loc>
+<lastmod>2021-02-03T17:25:48+01:00</lastmod>
+</url>
+<url>
+<loc>https://blog.skelz0r.fr/posts/activestorage-ovh</loc>
+<lastmod>2020-01-04T00:00:00+01:00</lastmod>
+</url>
+<url>
+<loc>https://blog.skelz0r.fr/posts/render-emails-in-web-browser</loc>
+<lastmod>2020-01-07T00:00:00+01:00</lastmod>
+</url>
+<url>
+<loc>https://blog.skelz0r.fr/posts/debugging-capybara-headless-driver</loc>
+<lastmod>2020-01-16T00:00:00+01:00</lastmod>
+</url>
+<url>
+<loc>https://blog.skelz0r.fr/about</loc>
+</url>
+<url>
+<loc>https://blog.skelz0r.fr/</loc>
+</url>
+</urlset>
