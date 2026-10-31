@@ -9,6 +9,10 @@ Bridgetown.configure do |config|
     end
   end
 
+  config.site_target = ENV.fetch("SITE_TARGET", "local")
+  config.umami_script_url = ENV["UMAMI_SCRIPT_URL"]
+  config.umami_website_id = ENV["UMAMI_WEBSITE_ID"]
+
   init :"bridgetown-feed"
   init :"bridgetown-sitemap"
 end

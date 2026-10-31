@@ -19,7 +19,7 @@ module LinkCheck
       ignore_missing_alt: false,
       allow_missing_href: false,
       swap_urls: {SITE_URL => ""},
-      ignore_urls: [UNCHECKABLE_HOSTS, %r{/stats/script\.js\z}],
+      ignore_urls: [UNCHECKABLE_HOSTS, ENV["UMAMI_SCRIPT_URL"]].compact,
       cache: {timeframe: {external: "7d"}, storage_dir: "tmp/htmlproofer"},
       typhoeus: {followlocation: true, connecttimeout: 10, timeout: 20, headers: {"User-Agent" => "blog.skelz0r.fr link check"}},
       hydra: {max_concurrency: 8},

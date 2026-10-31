@@ -1,0 +1,3 @@
+<% if site.config.site_target == "production" && site.config.umami_script_url && site.config.umami_website_id %>
+<script defer src="<%= site.config.umami_script_url %>" data-website-id="<%= site.config.umami_website_id %>" data-domains="<%= URI(site.config.url).host %>"></script>
+<% end %>
