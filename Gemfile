@@ -4,3 +4,7 @@ gem "bridgetown", "~> 2.2.2"
 gem "bridgetown-feed", "~> 4.0"
 gem "bridgetown-sitemap", "~> 3.0"
 gem "falcon"
+
+group :test do
+  gem "minitest"
+end
