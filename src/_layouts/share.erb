@@ -1,0 +1,67 @@
+---
+layout: default
+---
+<% post = collections.posts.resources.find { |resource| resource.data.slug == data.share_slug } %>
+<% kit = ShareKit.new(article_url: absolute_url(post.relative_url), data: site.data.dig("share", data.share_slug)) %>
+
+<article class="share">
+  <p class="post-meta">Preview only, never deployed to production.</p>
+  <h1><%= post.data.title %></h1>
+  <p><a href="<%= post.relative_url %>">Read the article</a> · data file: <code>src/_data/share/<%= data.share_slug %>.yml</code></p>
+  <p><img src="<%= post.data.og_image %>" alt="Open Graph image of the article" width="600" height="315"></p>
+
+  <% if kit.data.empty? %>
+    <p class="warning">No share data yet: create <code>src/_data/share/<%= data.share_slug %>.yml</code>, format in <code>CHECKLIST.md</code>.</p>
+  <% end %>
+
+  <% kit.problems.each do |problem| %>
+    <p class="warning"><%= problem %></p>
+  <% end %>
+
+  <% if (hn = kit.hn) %>
+    <h2>Hacker News</h2>
+    <h3>Title <span class="count"><%= hn[:title].length %>/80</span></h3>
+    <%= render "copy", text: hn[:title], id: "hn-title" %>
+    <h3>URL</h3>
+    <%= render "copy", text: hn[:url], id: "hn-url" %>
+    <p><a href="<%= hn[:submit] %>">Open the HN submit form</a></p>
+  <% end %>
+
+  <% if kit.tweets.any? %>
+    <h2>X thread</h2>
+    <% if kit.x_visual %><p>Visual: <code><%= kit.x_visual %></code></p><% end %>
+    <% kit.tweets.each_with_index do |tweet, index| %>
+      <h3><%= tweet[:label] %> <span class="count<%= " over" if tweet[:length] > ShareKit::TWEET_LIMIT %>">~<%= tweet[:length] %>/<%= ShareKit::TWEET_LIMIT %></span></h3>
+      <%= render "copy", text: tweet[:text], id: "tweet-#{index}" %>
+    <% end %>
+  <% end %>
+
+  <% if kit.x_article %>
+    <h2>X Article</h2>
+    <%= render "copy", text: kit.x_article, id: "x-article" %>
+  <% end %>
+
+  <% kit.reddit_posts.each_with_index do |post, index| %>
+    <h2>r/<%= post[:subreddit] %></h2>
+    <p><a href="<%= post[:rules] %>">Subreddit rules</a> · <a href="<%= post[:submit] %>">Open the submit form</a></p>
+    <h3>Title</h3>
+    <%= render "copy", text: post[:title], id: "reddit-#{index}-title" %>
+    <h3>Body</h3>
+    <%= render "copy", text: post[:body], id: "reddit-#{index}-body" %>
+  <% end %>
+
+  <% if kit.newsletter_subject %>
+    <h2>Newsletter subject</h2>
+    <%= render "copy", text: kit.newsletter_subject, id: "newsletter-subject" %>
+  <% end %>
+</article>
+
+<script>
+  document.querySelectorAll("button[data-copy]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(document.getElementById(button.dataset.copy).textContent)
+      button.textContent = "Copied"
+      setTimeout(() => { button.textContent = "Copy" }, 1500)
+    })
+  })
+</script>
