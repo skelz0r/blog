@@ -6,7 +6,14 @@ task default: :build
 
 desc "Build the site for deployment"
 task build: :clean do
+  ENV["BRIDGETOWN_ENV"] ||= "production"
   Bridgetown::Commands::Build.start
+end
+
+desc "Build the production site and check links, images and alt texts"
+task check: :build do
+  require_relative "lib/link_check"
+  LinkCheck.run("output", external: ENV["SKIP_EXTERNAL_LINKS"].to_s.empty?)
 end
 
 desc "Remove the generated site"
