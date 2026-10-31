@@ -1,0 +1,23 @@
+name: Article idea
+description: An article to write, before any draft
+labels: [idea]
+body:
+  - type: textarea
+    id: thesis
+    attributes:
+      label: Thesis
+      description: The one claim the article defends, in one or two sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: audience
+    attributes:
+      label: Audience
+      description: Who reads it, what they already know, where they hang out (HN, which subreddits, X).
+    validations:
+      required: true
+  - type: textarea
+    id: material
+    attributes:
+      label: Material
+      description: Experiments, numbers, code, links, notes that back the thesis.

@@ -1,0 +1,19 @@
+name: Setup
+description: Ruby, libvips and the link check cache
+runs:
+  using: composite
+  steps:
+    - name: Install libvips
+      shell: bash
+      run: sudo apt-get update -qq && sudo apt-get install -y -qq libvips42t64 || sudo apt-get install -y -qq libvips42
+
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "3.4"
+        bundler-cache: true
+
+    - uses: actions/cache@v5
+      with:
+        path: tmp/htmlproofer
+        key: htmlproofer-${{ github.run_id }}
+        restore-keys: htmlproofer-

@@ -1,0 +1,23 @@
+---
+layout: default
+---
+
+<section class="intro">
+  <p><%= site.metadata.description %></p>
+</section>
+
+<section class="post-list">
+  <% posts = collections.posts.resources.sort_by(&:date).reverse %>
+  <% if posts.empty? %>
+    <p class="empty">First article coming soon.</p>
+  <% end %>
+  <% posts.each do |post| %>
+    <article>
+      <h2><a href="<%= post.relative_url %>"><%= post.data.title %></a></h2>
+      <p class="post-meta"><time datetime="<%= post.date.iso8601 %>"><%= post.date.strftime("%B %-d, %Y") %></time></p>
+      <p><%= post.data.description %></p>
+    </article>
+  <% end %>
+</section>
+
+<%= render "subscribe", source: "home" %>

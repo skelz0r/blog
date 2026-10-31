@@ -1,0 +1,68 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  CLOUDFLARE_PROJECT_NAME: skelz0r-blog
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    env:
+      SITE_TARGET: production
+      UMAMI_SCRIPT_URL: ${{ vars.UMAMI_SCRIPT_URL }}
+      UMAMI_WEBSITE_ID: ${{ vars.UMAMI_WEBSITE_ID }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Build and check
+        run: bundle exec rake test check
+
+      - name: Deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets are required to deploy"
+            exit 1
+          fi
+          npx --yes wrangler@4 pages deploy output --project-name="$CLOUDFLARE_PROJECT_NAME" --branch=main \
+            --commit-hash="$GITHUB_SHA" --commit-message="$(git log -1 --format=%s)"
+
+      - name: Draft the newsletter for new articles
+        if: github.event_name == 'push'
+        env:
+          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ -z "$BUTTONDOWN_API_KEY" ]; then
+            echo "::warning::BUTTONDOWN_API_KEY is not set: no newsletter draft"
+            exit 0
+          fi
+          if [ -z "${BEFORE//0/}" ]; then
+            BEFORE=$(git hash-object -t tree /dev/null)
+          elif ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            echo "::error::previous commit $BEFORE is unavailable (force push?): run bin/newsletter-draft <slug> by hand"
+            exit 1
+          fi
+          slugs=$(git diff --name-only --diff-filter=A "$BEFORE" "$GITHUB_SHA" -- 'src/_posts/*.md' | xargs -r -n1 basename | sed 's/\.md$//')
+          if [ -z "$slugs" ]; then
+            echo "No new article"
+            exit 0
+          fi
+          bin/newsletter-draft $slugs

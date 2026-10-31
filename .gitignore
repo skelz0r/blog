@@ -1,0 +1,10 @@
+output
+.bridgetown-cache
+.bridgetown-metadata
+.routes.json
+/.bundle
+/tmp/*
+!/tmp/.keep
+.env
+.DS_Store
+node_modules

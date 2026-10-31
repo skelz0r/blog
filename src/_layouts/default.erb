@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <%= render "head", resource: resource %>
+  </head>
+  <body class="<%= data.layout %>">
+    <%= render "header" %>
+    <main>
+      <%= yield %>
+    </main>
+    <%= render "footer" %>
+  </body>
+</html>
