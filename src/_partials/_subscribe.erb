@@ -1,0 +1,12 @@
+<section class="subscribe" id="subscribe">
+  <h2>Get the next article by email</h2>
+  <p>One email per new article, nothing else. Unsubscribe in one click.</p>
+  <form action="https://buttondown.com/api/emails/embed-subscribe/<%= site.metadata.buttondown_username %>" method="post">
+    <label class="visually-hidden" for="subscribe-email">Email address</label>
+    <input type="email" name="email" id="subscribe-email" placeholder="you@example.com" autocomplete="email" required>
+    <input type="hidden" name="embed" value="1">
+    <input type="hidden" name="metadata__source" value="<%= source %>">
+    <button type="submit">Subscribe</button>
+  </form>
+  <p class="fine-print">You will get a confirmation email first. <a href="/privacy/">Privacy</a>.</p>
+</section>
