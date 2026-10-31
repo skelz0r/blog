@@ -43,3 +43,26 @@ jobs:
           fi
           npx --yes wrangler@4 pages deploy output --project-name="$CLOUDFLARE_PROJECT_NAME" --branch=main \
             --commit-hash="$GITHUB_SHA" --commit-message="$(git log -1 --format=%s)"
+
+      - name: Draft the newsletter for new articles
+        if: github.event_name == 'push'
+        env:
+          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ -z "$BUTTONDOWN_API_KEY" ]; then
+            echo "::warning::BUTTONDOWN_API_KEY is not set: no newsletter draft"
+            exit 0
+          fi
+          if [ -z "${BEFORE//0/}" ]; then
+            BEFORE=$(git hash-object -t tree /dev/null)
+          elif ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            echo "::error::previous commit $BEFORE is unavailable (force push?): run bin/newsletter-draft <slug> by hand"
+            exit 1
+          fi
+          slugs=$(git diff --name-only --diff-filter=A "$BEFORE" "$GITHUB_SHA" -- 'src/_posts/*.md' | xargs -r -n1 basename | sed 's/\.md$//')
+          if [ -z "$slugs" ]; then
+            echo "No new article"
+            exit 0
+          fi
+          bin/newsletter-draft $slugs

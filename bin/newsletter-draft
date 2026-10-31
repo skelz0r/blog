@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+require "json"
+require "net/http"
+require "yaml"
+require_relative "../lib/post_checks"
+
+SITE_URL = "https://blog.skelz0r.fr".freeze
+API_URL = URI("https://api.buttondown.com/v1/emails")
+
+dry_run = ARGV.delete("--dry-run")
+abort "usage: bin/newsletter-draft [--dry-run] <slug>..." if ARGV.empty?
+
+def email_for(slug)
+  path = "src/_posts/#{slug}.md"
+  front_matter = PostChecks.front_matter(path)
+  share_path = "src/_data/share/#{slug}.yml"
+  share = File.exist?(share_path) ? YAML.safe_load_file(share_path) || {} : {}
+  url = "#{SITE_URL}/#{slug}/?ref=newsletter"
+
+  {
+    subject: share["newsletter_subject"] || front_matter["title"],
+    body: "#{front_matter["description"]}\n\n[Read the article](#{url})\n",
+    status: "draft"
+  }
+end
+
+if dry_run
+  ARGV.each { |slug| puts JSON.pretty_generate(email_for(slug)) }
+  exit
+end
+
+api_key = ENV.fetch("BUTTONDOWN_API_KEY") { abort "BUTTONDOWN_API_KEY is not set" }
+
+ARGV.each do |slug|
+  request = Net::HTTP::Post.new(API_URL, "Authorization" => "Token #{api_key}", "Content-Type" => "application/json")
+  request.body = JSON.generate(email_for(slug))
+  response = Net::HTTP.start(API_URL.host, API_URL.port, use_ssl: true) { |http| http.request(request) }
+  abort "#{slug}: Buttondown answered #{response.code} #{response.body}" unless response.code.start_with?("2")
+
+  puts "#{slug}: draft created (#{JSON.parse(response.body)["id"]})"
+end
