@@ -1,0 +1,81 @@
+name: Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  CLOUDFLARE_PROJECT_NAME: skelz0r-blog
+
+jobs:
+  build:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      deployments: write
+    env:
+      SITE_TARGET: preview
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      - name: Build
+        run: bundle exec rake test build
+
+      - name: Deploy the preview
+        id: deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -o pipefail
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets are required to deploy"
+            exit 1
+          fi
+          npx --yes wrangler@4 pages deploy output --project-name="$CLOUDFLARE_PROJECT_NAME" --branch="pr-$PR_NUMBER" \
+            --commit-hash="$(git rev-parse HEAD)" --commit-message="PR #$PR_NUMBER" | tee deploy.log
+          url=$(grep -oE 'https://[a-z0-9.-]+\.pages\.dev' deploy.log | head -1)
+          alias=$(grep -i 'alias' deploy.log | grep -oE 'https://[a-z0-9.-]+\.pages\.dev' | head -1)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          [ -n "$url" ] || { echo "::error::no pages.dev URL in wrangler output"; exit 1; }
+          echo "alias=${alias:-$url}" >> "$GITHUB_OUTPUT"
+
+      - name: List share pages
+        id: share
+        env:
+          ALIAS: ${{ steps.deploy.outputs.alias }}
+        run: |
+          delimiter="links_$(openssl rand -hex 16)"
+          {
+            echo "links<<$delimiter"
+            for dir in output/_share/*/; do
+              [ -d "$dir" ] || continue
+              slug=$(basename "$dir")
+              echo "- [$slug]($ALIAS/$slug/) · [share]($ALIAS/_share/$slug/)"
+            done
+            echo "$delimiter"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Comment the preview URL
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: preview
+          message: |
+            Preview: ${{ steps.deploy.outputs.alias }} (this commit: ${{ steps.deploy.outputs.url }})
+
+            ${{ steps.share.outputs.links }}
+
+      - name: Check links, images and alt texts
+        run: bundle exec rake proof

@@ -10,8 +10,11 @@ task build: :clean do
   Bridgetown::Commands::Build.start
 end
 
-desc "Build the production site and check links, images and alt texts"
-task check: :build do
+desc "Build the site then check links, images and alt texts"
+task check: %i[build proof]
+
+desc "Check links, images and alt texts of the already built site"
+task :proof do
   require_relative "lib/link_check"
   LinkCheck.run("output", external: ENV["SKIP_EXTERNAL_LINKS"].to_s.empty?)
 end
