@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+require "date"
+
+slug = ARGV.first or abort "usage: bin/new-post <slug>"
+abort "slug must be lowercase words separated by dashes" unless slug.match?(/\A[a-z0-9]+(-[a-z0-9]+)*\z/)
+path = "src/_posts/#{slug}.md"
+abort "#{path} already exists" if File.exist?(path)
+
+File.write(path, <<~MARKDOWN)
+  ---
+  title: ""
+  description: ""
+  date: #{Date.today}
+  tags: []
+  ---
+
+MARKDOWN
+puts path
