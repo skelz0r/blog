@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+require "json"
+require "net/http"
+require "optparse"
+require "time"
+require_relative "../lib/post_checks"
+
+options = {}
+OptionParser.new do |parser|
+  parser.banner = "usage: bin/stats [--days N] <slug>"
+  parser.on("--days N", Integer, "Last N days instead of since the article's date") { |days| options[:days] = days }
+end.parse!
+
+slug = ARGV.first or abort "usage: bin/stats [--days N] <slug>"
+post = "src/_posts/#{slug}.md"
+abort "#{post} not found" unless File.exist?(post)
+
+api_url = ENV.fetch("UMAMI_API_URL") { abort "UMAMI_API_URL is not set (e.g. https://stats.example.org/api)" }.chomp("/")
+token = ENV.fetch("UMAMI_API_TOKEN") { abort "UMAMI_API_TOKEN is not set" }
+website_id = ENV.fetch("UMAMI_WEBSITE_ID") { abort "UMAMI_WEBSITE_ID is not set" }
+
+end_at = Time.now
+start_at = options[:days] ? end_at - options[:days] * 86_400 : Time.parse(PostChecks.front_matter(post)["date"].to_s)
+path = "/#{slug}/"
+
+fetch = lambda do |endpoint, params|
+  uri = URI("#{api_url}/websites/#{website_id}/#{endpoint}")
+  uri.query = URI.encode_www_form(params.merge(startAt: (start_at.to_f * 1000).to_i, endAt: (end_at.to_f * 1000).to_i, path: path))
+  request = Net::HTTP::Get.new(uri, "Authorization" => "Bearer #{token}", "Accept" => "application/json")
+  response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") { |http| http.request(request) }
+  abort "Umami answered #{response.code} on #{endpoint}: #{response.body}" unless response.code.start_with?("2")
+  JSON.parse(response.body)
+end
+
+stats = fetch.call("stats", {})
+queries = fetch.call("metrics", {type: "query", limit: 10_000})
+referrers = fetch.call("metrics", {type: "referrer"})
+
+channels = Hash.new(0)
+queries.each do |row|
+  ref = URI.decode_www_form(row["x"].to_s.delete_prefix("?")).to_h["ref"]
+  channels[ref] += row["y"].to_i if ref
+end
+tagged = channels.values.sum
+visitors = stats["visitors"].to_i
+
+puts "#{path}  #{start_at.strftime("%Y-%m-%d")} -> #{end_at.strftime("%Y-%m-%d")}"
+puts "views #{stats["pageviews"]}, visits #{stats["visits"]}, visitors #{visitors}"
+puts
+puts "Visitors by channel (?ref=)"
+channels.sort_by { |_, count| -count }.each { |ref, count| puts format("  %-28s %6d", ref, count) }
+puts format("  %-28s %6d", "untagged (approx.)", [visitors - tagged, 0].max)
+puts
+puts "Visitors by referrer"
+referrers.first(10).each { |row| puts format("  %-28s %6d", row["x"].to_s.empty? ? "(direct)" : row["x"], row["y"].to_i) }
